@@ -1,0 +1,505 @@
+#include <kipr/botball.h>
+int l_motor = 3;
+int r_motor = 0;
+int claw = 3;
+int arm = 2;
+int armbottom = 2000;
+int armtop = 550;
+int armtop2 = 200;
+int armstart = 400;
+int clawclose = 650;
+int clawopen = 100;
+int lforward = 30;
+int lforward2 = 35;
+int rforward = 35;
+int rforward2 = 32;
+int rforward3 = 40;
+int lmvr = 50; //left motor for veer right
+int rmvr = 0; //right motor for veer right
+int rmvl = 50; //right motor for veer left
+int lmvl = 5; //left motor for veer left
+int sensfront = 0;
+int black = 3000;
+int gray = 3500;
+int lturn = 450; //time for left turn
+int lmturn = 100; //motor of left during left turn
+int rmturn = -45; //motor of left during left turn
+int rmturn2 = -100; //motor of left during left turn
+int lredcircle = 20;
+int rredcircle = 22;
+int counter = 0;
+int sensside = 5;
+int fire = 0;
+int rspeed = 30; //rspeed of lookright
+int lspeed = 35; //lspeed of lookleft
+int red = 0; //fire red
+int yellow = 1; //fire yellow
+int orange = 2;
+int lforwardleft = 80;
+int lforwardveer = 35;
+int frspeed = 80;
+int frlspeed = 40;
+int light = 1;
+
+int main(){
+  wait_for_light(light);
+  set_servo_position(arm, armstart);
+  set_servo_position(claw, clawopen);
+  enable_servos();
+  camera_open();
+  clawdown();
+
+  while(analog(sensfront) < black){
+    forward();
+    printf("white\n");
+    printf("sensfront=%d\n",analog(sensfront));
+  }
+  ao();
+  while(analog(sensfront) > black){
+    forward();
+    printf("black\n");
+    printf("sensfront=%d\n",analog(sensfront));
+  }
+  ao();
+  while(analog(sensfront) < black){
+    forward();
+    printf("white\n");
+    printf("sensfront=%d\n",analog(sensfront));
+  }
+  ao();
+  while(analog(sensfront) > black){
+    forward();
+    printf("black\n");
+    printf("sensfront=%d\n",analog(sensfront));
+  }
+  ao();
+  while(analog(sensfront) < black){
+    turnleft();
+    printf("turnleft\n");
+  }
+  ao();
+
+  while(analog(sensside) < gray){
+    linefollow();
+    printf("linefollow\n");
+    printf("sensside=%d\n",analog(sensside));
+  }
+  ao();
+
+  while(analog(sensside) > gray){
+    forward();
+    printf("forward\n");
+    printf("sensside=%d\n",analog(sensside));
+  }
+  ao();
+
+  int fire;
+  camera_open();
+  int counter = 0;
+  while(counter < 15){
+    printf("get_object_count(yellow) = %d\n", get_object_count(yellow));
+    printf("get_object_count(red) = %d\n", get_object_count(red));
+    camera_update();
+    msleep(50);
+    counter ++;
+    printf("updating\n");
+  }
+  printf("updated\n");
+  while(1){
+    printf("cameraopen\n");
+    camera_update();
+    printf("get_object_count(yellow) = %d\n", get_object_count(yellow));
+    printf("get_object_count(red) = %d\n", get_object_count(red));
+    if(get_object_count(yellow) > 0){
+      printf("get_object_count(yellow) = %d\n", get_object_count(yellow));
+      printf("get_object_count(red) = %d\n", get_object_count(red));
+      if(get_object_count(red) > 0){
+        printf("get_object_count(red) = %d\n", get_object_count(red));
+        fire = 1;
+        printf("FIRE\n");
+        break; 
+      }
+    }
+    else{
+      fire = 0;
+      printf("NO FIRE\n");
+      break;
+    }
+  }
+  while(1){
+    if(fire == 1){
+      build1();
+      printf("BUILD1\n");
+      break;
+    }
+    if(fire == 0){
+      build2();
+      printf("BUILD2\n");
+      break;
+    }
+  }
+  ao();
+  camera_close();
+            printf("reset\n");
+            disable_servos();
+            shut_down_in(120.0);
+            }
+
+
+
+
+
+            void forward(){
+      motor(l_motor, lforward);
+      motor(r_motor, rforward2);
+      msleep(lturn);
+    }
+
+
+
+            void circle(){
+      motor(l_motor, 80);
+      motor(r_motor, -rforward);
+    }
+            void forwardleft(){
+      motor(l_motor, lforwardleft);
+      motor(r_motor, rforward2);
+    }
+void backwardleft(){
+      motor(l_motor, -lforwardleft);
+      motor(r_motor, -rforward);
+    }
+            void forwardleftveer(){
+      motor(l_motor, lforwardveer);
+      motor(r_motor, rforward);
+    }
+
+            void circle2(){
+      motor(l_motor, 80);
+    }
+            void rcircle(){
+      motor(r_motor, rforward);
+      motor(l_motor, -lforward);
+    }
+            void rcircle2(){
+      motor(r_motor, rforward);
+    }
+            void build1(){
+      forward();
+      msleep(1000);
+      openclaw();
+      printf("openclaw\n");
+              while(1){
+    reverse();
+    msleep(600);
+    set_servo_position(arm, armtop2);
+    break;
+  }
+  ao();
+
+  while(analog(sensside) < gray){
+    circle();
+    printf("CIRCLE1\n");
+    printf("sensside=%d\n",analog(sensside));
+  }
+  ao();
+  while(analog(sensside) > gray){
+    circle2();
+    printf("CIRCLE22\n");
+    printf("sensside=%d\n",analog(sensside));
+  }
+  ao();
+  while(analog(sensside) < gray){
+    circle2();
+    printf("CIRCLE23\n");
+    printf("sensside=%d\n",analog(sensside));
+  }
+  ao();
+  while(analog(sensside) > gray){
+    circle2();
+    printf("CIRCLE24\n");
+    printf("sensside=%d\n",analog(sensside));
+  }
+  ao();
+  while(analog(sensside) < gray){
+    forwardleft();
+    printf("LFORWARDLEFT\n");
+    printf("sensside=%d\n",analog(sensside));
+  }
+  ao();
+  while(analog(sensside) > gray){
+    forward();
+    msleep(1000);
+    printf("FORWARD\n");
+  }
+  while(1){
+    reverse();
+    msleep(2600);
+    break;
+  }
+  while(1){
+    turnright();
+    msleep(600);
+    break;
+  }
+  ao();
+  
+  while(analog(sensside) < gray){
+    rcircle();
+    printf("RCIRCLE1\n");
+    printf("sensside=%d\n",analog(sensside));
+  }
+  ao();
+  printf("RCIRCLE2\n");
+ while(analog(sensside) > gray){
+    rcircle();
+  printf("RCIRCLE2\n");
+    while(1){
+      rcircle();
+      printf("RCIRCLE3\n");
+      msleep(3500);
+      break;
+    }
+   break;
+ }
+ao();
+  while(1){
+    forward();
+    printf("forward\n");
+    if(analog(sensside) > gray){
+      break;
+    }
+  }
+  ao();
+  while(analog(sensside) > gray){
+    forward();
+  }
+  ao();
+  while(analog(sensside) < gray){
+    forward();
+    msleep(1000);
+    break;
+  }
+  ao();
+    }
+void afterbuild1(){
+   while(analog(sensside) < black){
+    reverse();
+            }
+              ao();
+ while(analog(sensside) > black){
+    reverse();
+            }
+              ao();
+  while(analog(sensside) < black){
+    reverse();
+            }
+              ao();
+  while(analog(sensside) > black){
+    circle();
+    printf("circle1\n");
+  }
+  ao();
+   while(analog(sensside) < black){
+    linefollow();
+  }
+  ao();
+ while(analog(sensside) > black){
+   reverse2();
+   printf("reverse\n");
+   msleep(4000);
+   break;
+ }
+  ao();
+ while(analog(sensside) < black){
+   circle();
+   printf("circle\n");
+  }
+  ao();
+ while(1){
+   forwardright();
+   if(analog(sensfront) > black){
+     break;
+   }
+ }
+ ao();
+ while(analog(sensfront) > black){
+   clawdown();
+   linefollow();
+   msleep(3000);
+   break;
+}
+ao();
+}
+void forwardright(){
+  motor(r_motor, frspeed);
+  motor(l_motor, frlspeed);
+}
+            void build2(){
+      while(1){
+        forward();
+        msleep(2000);
+        break;
+      }
+      ao();
+      while(1){
+        reverse();
+        if(analog(sensside) > gray){
+          break;
+        }
+      }
+      ao();
+      while(analog(sensside) > gray){
+        reverse();
+        printf("reverse black\n");
+      }
+      ao();
+      while(analog(sensside) < gray){
+        reverse();
+        msleep(1700);
+        printf("reverse white\n");
+        break;
+      }
+      ao();
+      while(analog(sensside) < gray){
+        turnright();
+        printf("turnright1\n");
+      }
+      ao();
+      while(analog(sensside) > gray){
+        turnright();
+        printf("turnright2\n");
+      }
+      ao();
+      while(analog(sensside) < gray){
+        turnright();
+        printf("turnright3\n");
+        msleep(300);
+        break;
+      }
+      ao();
+      while(1){
+        forward();
+        printf("forwardwhite1\n");
+        msleep(1000);
+        break;
+      }
+      ao();
+
+      while(1){
+        forwardleft();
+        printf("forwardleftwhite2\n");
+        if(analog(sensside) > gray){
+          break;
+        }
+      }
+      ao();
+      while(analog(sensside) > gray){
+        forward();
+        printf("forwardblack\n");
+        if(analog(sensside) < gray){
+          printf("forward\n");
+          break;
+        }
+      }
+      ao();
+      printf("BREAK\n");
+      while(1){
+        circle();
+        printf("circle\n");
+        msleep(300);
+        break;
+      }
+      printf("breakfinal\n");
+      while(1){
+        forward();
+        printf("forwardwhite\n");
+        msleep(1500);
+        openclaw();
+        printf("openclaw\n");
+        break;
+      }
+      ao();
+       
+    }
+
+            void reverse(){
+      motor(l_motor, -lforward);
+      motor(r_motor, -rforward);
+    }
+void reverse2(){
+      motor(l_motor, -lforward2);
+      motor(r_motor, -rforward);
+    }
+            void openclaw(){
+      set_servo_position(claw, clawopen);
+    }
+            void clawdown(){
+      set_servo_position(claw, clawopen);
+      msleep(500);
+      set_servo_position(arm, armbottom);
+      msleep(2000);
+      printf("armbottom\n");
+      set_servo_position(claw, clawclose);
+      msleep(2000);
+      printf("clawclose\n");
+      set_servo_position(arm, armtop);
+      msleep(1000);
+      printf("armup\n");
+    }
+            void veerright (){
+      printf("right\n");
+      motor(l_motor, lmvr);
+      motor(r_motor, rmvr);
+
+    }
+            void veerleft (){
+      printf("left\n");
+      motor(r_motor, rmvl);
+      motor(l_motor, -lmvl);
+    }
+            void circlered(){
+      motor(r_motor, -rredcircle);
+      motor(l_motor, lredcircle);
+    }
+
+            void linefollow(){
+      while(analog(sensside) < gray){
+        if (analog(sensfront) > black){
+          veerleft();
+        }
+        if (analog(sensfront) < black){
+          veerright();
+        }
+      }
+    }
+
+
+            void turnleft(){
+      while(analog(sensfront) < black){
+        motor(l_motor, lmturn);
+        motor(r_motor, rmturn);
+        ao();
+      }
+    }
+            void turnleft2(){
+      motor(l_motor, lmturn);
+      motor(r_motor, rmturn);
+    }
+            void turnright(){
+      motor(l_motor, -lmturn);
+      motor(r_motor, -rmturn2);
+    }
+            void lookright(){
+      motor(l_motor, -lspeed);
+      motor(r_motor, rspeed);
+    }
+            void lookleft(){
+      motor(l_motor, lspeed);
+      motor(r_motor, -rspeed);
+    }
+
+            void forwardtime(){
+      motor(l_motor, lforward);
+      motor(r_motor, rforward);
+    }
